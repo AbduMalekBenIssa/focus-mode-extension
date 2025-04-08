@@ -1,0 +1,333 @@
+/* Basic setup for our popup window */
+body {
+  width: 380px;  /* Nice wide popup so everything fits */
+  padding: 24px;  /* Some breathing room around the edges */
+  font-family: 'Space Grotesk', sans-serif;  /* Our cool modern font */
+  background: #ffffff;
+  color: #000000;
+  margin: 0;
+}
+
+/* Keep everything stacked neatly in a column */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;  /* Space things out nicely */
+}
+
+/* The top bar with our title and switch */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;  /* Title on left, switch on right */
+  margin-bottom: 16px;
+  padding: 0 4px;
+}
+
+/* Make the title nice and bold */
+h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.5px;  /* Tighten up the letters a bit */
+}
+
+/* Section titles */
+h2 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  color: #000000;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+}
+
+/* Smaller headings for categories */
+h3 {
+  margin: 16px 0 12px 0;
+  font-size: 14px;
+  color: #666666;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+}
+
+/* Each major section of our popup */
+.section {
+  background: #ffffff;
+  border-radius: 16px;  /* Nice rounded corners */
+  padding: 20px;
+  border: 1px solid #eee;
+  transition: all 0.3s ease;  /* Smooth animations */
+}
+
+/* Time selection styling */
+.time-section {
+  margin-bottom: 16px;
+}
+
+.time-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.time-separator {
+  color: #000;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.time-picker {
+  padding: 12px 16px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px;
+  background: #fafafa;
+  color: #000;
+  transition: all 0.2s ease;
+  width: 120px;
+}
+
+.time-picker:focus {
+  outline: none;
+  border-color: #000;
+  background: #fff;
+}
+
+/* The box where you type in websites */
+.website-input {
+  display: flex;
+  gap: 12px;  /* Space between the input and the + button */
+  margin-bottom: 24px;
+}
+
+/* The text input box itself */
+#website-input {
+  flex: 1;  /* Take up all available space */
+  padding: 14px 16px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px;
+  background: #fafafa;
+  transition: all 0.2s ease;
+}
+
+/* Make the input box look nice when you click it */
+#website-input:focus {
+  outline: none;
+  border-color: #000;
+  background: #fff;
+}
+
+/* The + button to add websites */
+#add-website {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Make the + button darker when you hover */
+#add-website:hover {
+  background: #333;
+}
+
+/* The grid of category buttons (Social, Gaming, etc.) */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);  /* Two buttons per row */
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+/* Each category button */
+.action-btn {
+  padding: 12px;
+  background: #f0f0f0;
+  color: #000;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Make buttons look clickable on hover */
+.action-btn:hover {
+  background: #e8e8e8;
+  border-color: #000;
+}
+
+/* When all sites in a category are blocked */
+.action-btn.active {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+/* The container for history suggestions */
+.suggestion-list {
+  display: flex;
+  flex-wrap: wrap;  /* Wrap to multiple lines if needed */
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+
+/* Each suggestion bubble */
+.suggestion {
+  background: #fff;
+  padding: 6px 12px;
+  border-radius: 20px;  /* Nice pill shape */
+  font-size: 13px;
+  cursor: pointer;
+  color: #666;
+  border: 1px solid #eee;
+  transition: all 0.2s ease;
+}
+
+/* Make suggestions look clickable */
+.suggestion:hover {
+  background: #f8f8f8;
+  border-color: #ccc;
+  color: #000;
+}
+
+/* Gray out suggestions that are already blocked */
+.suggestion.already-blocked {
+  opacity: 0.5;
+  text-decoration: line-through;
+  cursor: not-allowed;
+  background: #f0f0f0;
+}
+
+/* The list of currently blocked sites */
+.website-list {
+  list-style: none;
+  padding: 12px;
+  margin: 0;
+  max-height: 240px;  /* Not too tall, scroll if needed */
+  overflow-y: auto;
+  background: #000;  /* Dark theme for emphasis */
+  border-radius: 12px;
+}
+
+/* Make the scrollbar look nice */
+.website-list::-webkit-scrollbar {
+  width: 6px;  /* Thin scrollbar */
+}
+
+.website-list::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 3px;
+}
+
+.website-list::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 3px;
+}
+
+/* Each blocked website in the list */
+.website-list li {
+  display: flex;
+  justify-content: space-between;  /* Website on left, remove button on right */
+  align-items: center;
+  padding: 12px 16px;
+  background: #111;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  font-size: 14px;
+  border: 1px solid #222;
+  transition: all 0.2s ease;
+  color: #fff;
+}
+
+/* Highlight on hover */
+.website-list li:hover {
+  background: #222;
+}
+
+/* The remove button that appears on hover */
+.website-list li button {
+  opacity: 0;  /* Hidden by default */
+  padding: 6px 12px;
+  background: #333;
+  color: #fff;
+  font-size: 13px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Show the remove button when hovering over a website */
+.website-list li:hover button {
+  opacity: 1;
+}
+
+/* Style the remove button's hover state */
+.website-list li button:hover {
+  background: #444;
+  border-color: #555;
+}
+
+/* Toggle button */
+.toggle-button {
+  width: 52px;
+  height: 28px;
+  border-radius: 14px;
+  background: #eee;
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  padding: 0;
+  border: none;
+}
+
+.toggle-button::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  background: #fff;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.toggle-button.enabled {
+  background: #000;
+}
+
+.toggle-button.enabled::after {
+  transform: translateX(24px);
+}
+
+/* Headers for each section */
+.section-header {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+} 

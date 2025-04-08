@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LOCKED OUT</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap">
+  <style>
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      text-align: center;
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #000000;
+      color: white;
+      overflow: hidden;
+    }
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    h1 {
+      font-size: 120px;
+      font-weight: 700;
+      margin: 0 0 40px 0;
+      letter-spacing: -2px;
+      text-shadow: 0 0 20px rgba(255,0,0,0.7);
+      animation: shake 0.5s infinite, warning 1s infinite;
+      white-space: nowrap;
+      text-align: center;
+      width: 100%;
+    }
+    .message {
+      font-size: 24px;
+      line-height: 1.4;
+      margin: 0 0 30px 0;
+      opacity: 0.9;
+    }
+    .sub-message {
+      font-size: 18px;
+      opacity: 0.7;
+      margin-bottom: 40px;
+    }
+    button {
+      background-color: white;
+      color: black;
+      border: none;
+      padding: 16px 32px;
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(255,255,255,0.2);
+    }
+    
+    .explosion {
+      position: fixed;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+    
+    .particle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #ff3d00;
+      border-radius: 50%;
+      animation: explode 1s infinite;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+    
+    @keyframes warning {
+      0%, 100% { color: white; }
+      50% { color: #ff3d00; }
+    }
+    
+    @keyframes explode {
+      0% {
+        transform: translate(0, 0) scale(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--tx), var(--ty)) scale(1);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="explosion"></div>
+  <div class="container">
+    <h1>LOCK IN YOU FOB!</h1>
+    <button onclick="closeTab()">Fine, I'm Going Back...</button>
+  </div>
+
+  <script>
+    // Function to close the tab
+    function closeTab() {
+      window.close();
+      // Fallback for browsers that block window.close()
+      if (!window.closed) {
+        window.location.href = "about:blank";
+        window.top.close();
+      }
+    }
+
+    // Create explosion particles
+    const explosion = document.querySelector('.explosion');
+    
+    function createParticles() {
+      for(let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        // Random position and trajectory
+        const angle = (Math.random() * Math.PI * 2);
+        const velocity = 50 + Math.random() * 100;
+        const tx = Math.cos(angle) * velocity;
+        const ty = Math.sin(angle) * velocity;
+        
+        particle.style.setProperty('--tx', `${tx}px`);
+        particle.style.setProperty('--ty', `${ty}px`);
+        
+        // Random starting position
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        
+        explosion.appendChild(particle);
+        
+        // Remove particle after animation
+        particle.addEventListener('animationend', () => {
+          particle.remove();
+        });
+      }
+    }
+
+    // Create new particles periodically
+    setInterval(createParticles, 1000);
+  </script>
+</body>
+</html> 
