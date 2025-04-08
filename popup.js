@@ -6,9 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const blockedWebsitesList = document.getElementById('blocked-websites');  // The list showing all blocked sites
   const toggleButton = document.getElementById('toggle-mode');  // The on/off switch at the top
   const historySuggestions = document.getElementById('history-suggestions');  // Where we show sites from your history
+  const themeToggle = document.getElementById('theme-toggle');
 
-  // When the popup opens, we need to load all the saved stuff
-  chrome.storage.sync.get(['blockedWebsites', 'enabled'], (data) => {
+  // Load saved settings and theme
+  chrome.storage.sync.get(['blockedWebsites', 'enabled', 'theme'], (data) => {
     console.log('Getting all your saved stuff:', data);
     // If you had any sites blocked before, let's show them
     if (data.blockedWebsites) {
@@ -21,8 +22,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // If Focus Mode was turned on before, keep it on
     if (data.enabled) {
-      toggleButton.textContent = 'Disable Focus Mode';
       toggleButton.classList.add('enabled');
+    }
+    // Set up the theme
+    if (data.theme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      themeToggle.textContent = 'Light';
+      themeToggle.title = 'Switch to light mode';
+    } else {
+      themeToggle.textContent = 'Dark';
+      themeToggle.title = 'Switch to dark mode';
     }
   });
 
@@ -238,10 +247,22 @@ document.addEventListener('DOMContentLoaded', () => {
       const newState = !data.enabled;  // Flip the switch
       console.log('Turning Focus Mode', newState ? 'on' : 'off');
       chrome.storage.sync.set({ enabled: newState }, () => {
-        // Update the button's text and style
-        toggleButton.textContent = newState ? 'Disable Focus Mode' : 'Enable Focus Mode';
+        // Just toggle the enabled class, no text content change
         toggleButton.classList.toggle('enabled', newState);
       });
     });
+  });
+
+  // Handle theme toggle
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    // Show what clicking will do next
+    themeToggle.textContent = newTheme === 'dark' ? 'Light' : 'Dark';
+    themeToggle.title = newTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+    
+    chrome.storage.sync.set({ theme: newTheme });
   });
 }); 

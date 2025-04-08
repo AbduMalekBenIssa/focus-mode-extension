@@ -1,11 +1,172 @@
-/* Basic setup for our popup window */
+/* Theme variables - light mode by default */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --border-color: #e0e0e0;
+  --input-bg: #f5f5f5;
+  --input-border: #e0e0e0;
+  --section-bg: #ffffff;
+  --suggestion-bg: #f5f5f5;
+  --suggestion-color: #666;
+  --suggestion-border: #e0e0e0;
+  --action-btn-bg: #f5f5f5;
+  --action-btn-border: #e0e0e0;
+  --action-btn-color: #333;
+  --website-list-bg: #f5f5f5;
+  --website-item-bg: #ffffff;
+  --website-item-color: #333;
+  --website-item-border: #e0e0e0;
+  --remove-btn-bg: #f5f5f5;
+  --remove-btn-color: #666;
+  --remove-btn-border: #e0e0e0;
+  --header-btn-bg: #f5f5f5;
+  --header-btn-color: #333;
+  --section-header-color: #666;
+  --section-description-color: #888;
+}
+
+/* Dark mode styles */
+[data-theme="dark"] {
+  --bg-color: #1a1a1a;
+  --text-color: #ffffff;
+  --border-color: #333;
+  --input-bg: #2a2a2a;
+  --input-border: #333;
+  --section-bg: #1a1a1a;
+  --suggestion-bg: #2a2a2a;
+  --suggestion-color: #ccc;
+  --suggestion-border: #333;
+  --action-btn-bg: #2a2a2a;
+  --action-btn-border: #333;
+  --action-btn-color: #fff;
+  --website-list-bg: #2a2a2a;
+  --website-item-bg: #333;
+  --website-item-color: #fff;
+  --website-item-border: #444;
+  --remove-btn-bg: #444;
+  --remove-btn-color: #fff;
+  --remove-btn-border: #555;
+  --header-btn-bg: #2a2a2a;
+  --header-btn-color: #fff;
+}
+
+/* Basic setup for the whole popup */
 body {
-  width: 380px;  /* Nice wide popup so everything fits */
-  padding: 24px;  /* Some breathing room around the edges */
-  font-family: 'Space Grotesk', sans-serif;  /* Our cool modern font */
-  background: #ffffff;
-  color: #000000;
+  width: 400px;  /* Increased from 350px for more breathing room */
   margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Header buttons container */
+.header-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* The header with the title and toggle */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  gap: 16px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  text-align: center;
+  flex: 1;
+}
+
+/* Theme toggle button - dark by default in light mode */
+.theme-button {
+  padding: 8px 12px;
+  min-width: 45px;
+  height: 32px;
+  border: none;
+  background: #1a1a1a;
+  color: #ffffff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.theme-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.theme-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* When in dark mode, style the Light button */
+[data-theme="dark"] .theme-button {
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+/* The on/off toggle switch */
+.toggle-button {
+  position: relative;
+  width: 60px;
+  height: 32px;
+  border-radius: 16px;
+  background: #e0e0e0;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* The sliding circle in the toggle */
+.toggle-button::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: white;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* When the toggle is enabled */
+.toggle-button.enabled {
+  background: #4CAF50;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.toggle-button.enabled::before {
+  left: 32px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 /* Keep everything stacked neatly in a column */
@@ -13,23 +174,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 24px;  /* Space things out nicely */
-}
-
-/* The top bar with our title and switch */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;  /* Title on left, switch on right */
-  margin-bottom: 16px;
-  padding: 0 4px;
-}
-
-/* Make the title nice and bold */
-h1 {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 600;
-  letter-spacing: -0.5px;  /* Tighten up the letters a bit */
+  padding: 20px;  /* Increased padding for more space */
 }
 
 /* Section titles */
@@ -52,11 +197,11 @@ h3 {
 
 /* Each major section of our popup */
 .section {
-  background: #ffffff;
-  border-radius: 16px;  /* Nice rounded corners */
-  padding: 20px;
-  border: 1px solid #eee;
-  transition: all 0.3s ease;  /* Smooth animations */
+  background: var(--section-bg);
+  border-radius: 16px;
+  padding: 24px;  /* Increased padding */
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
 }
 
 /* Time selection styling */
@@ -98,27 +243,27 @@ h3 {
 /* The box where you type in websites */
 .website-input {
   display: flex;
-  gap: 12px;  /* Space between the input and the + button */
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 24px;  /* Increased spacing */
 }
 
 /* The text input box itself */
 #website-input {
-  flex: 1;  /* Take up all available space */
-  padding: 14px 16px;
-  border: 1px solid #eee;
+  flex: 1;
+  padding: 14px 16px;  /* Increased padding */
+  border: 1px solid var(--input-border);
   border-radius: 12px;
-  font-family: 'Space Grotesk', sans-serif;
   font-size: 15px;
-  background: #fafafa;
+  background: var(--input-bg);
+  color: var(--text-color);
   transition: all 0.2s ease;
 }
 
 /* Make the input box look nice when you click it */
 #website-input:focus {
   outline: none;
-  border-color: #000;
-  background: #fff;
+  border-color: var(--text-color);
+  background: var(--bg-color);
 }
 
 /* The + button to add websites */
@@ -130,33 +275,39 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #000;
-  color: #fff;
+  background: var(--text-color);
+  color: var(--bg-color);
   border: none;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* Make the + button darker when you hover */
 #add-website:hover {
-  background: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+#add-website:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* The grid of category buttons (Social, Gaming, etc.) */
 .quick-actions {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);  /* Two buttons per row */
-  gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;  /* Increased gap between buttons */
   margin-bottom: 24px;
 }
 
 /* Each category button */
 .action-btn {
-  padding: 12px;
-  background: #f0f0f0;
-  color: #000;
-  border: 2px solid #e0e0e0;
+  padding: 14px;
+  background: var(--action-btn-bg);
+  color: var(--action-btn-color);
+  border: none;
   border-radius: 12px;
   font-size: 14px;
   font-weight: 600;
@@ -164,19 +315,24 @@ h3 {
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* Make buttons look clickable on hover */
 .action-btn:hover {
-  background: #e8e8e8;
-  border-color: #000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.action-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* When all sites in a category are blocked */
 .action-btn.active {
-  background: #000;
-  color: #fff;
-  border-color: #000;
+  background: var(--text-color);
+  color: var(--bg-color);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 /* The container for history suggestions */
@@ -186,28 +342,29 @@ h3 {
   gap: 8px;
   margin-bottom: 24px;
   padding: 12px;
-  background: #fafafa;
+  background: var(--input-bg);
   border-radius: 12px;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-color);
 }
 
 /* Each suggestion bubble */
 .suggestion {
-  background: #fff;
+  background: var(--suggestion-bg);
   padding: 6px 12px;
-  border-radius: 20px;  /* Nice pill shape */
+  border-radius: 20px;
   font-size: 13px;
   cursor: pointer;
-  color: #666;
-  border: 1px solid #eee;
+  color: var(--suggestion-color);
+  border: none;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Make suggestions look clickable */
 .suggestion:hover {
-  background: #f8f8f8;
-  border-color: #ccc;
-  color: #000;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+  background: var(--text-color);
+  color: var(--bg-color);
 }
 
 /* Gray out suggestions that are already blocked */
@@ -215,7 +372,7 @@ h3 {
   opacity: 0.5;
   text-decoration: line-through;
   cursor: not-allowed;
-  background: #f0f0f0;
+  background: var(--action-btn-bg);
 }
 
 /* The list of currently blocked sites */
@@ -225,8 +382,9 @@ h3 {
   margin: 0;
   max-height: 240px;  /* Not too tall, scroll if needed */
   overflow-y: auto;
-  background: #000;  /* Dark theme for emphasis */
+  background: var(--website-list-bg);
   border-radius: 12px;
+  border: 1px solid var(--border-color);
 }
 
 /* Make the scrollbar look nice */
@@ -235,12 +393,12 @@ h3 {
 }
 
 .website-list::-webkit-scrollbar-track {
-  background: #222;
+  background: var(--website-item-bg);
   border-radius: 3px;
 }
 
 .website-list::-webkit-scrollbar-thumb {
-  background: #444;
+  background: var(--website-item-border);
   border-radius: 3px;
 }
 
@@ -250,84 +408,57 @@ h3 {
   justify-content: space-between;  /* Website on left, remove button on right */
   align-items: center;
   padding: 12px 16px;
-  background: #111;
+  background: var(--website-item-bg);
   margin-bottom: 8px;
   border-radius: 12px;
   font-size: 14px;
-  border: 1px solid #222;
+  border: 1px solid var(--website-item-border);
   transition: all 0.2s ease;
-  color: #fff;
+  color: var(--website-item-color);
 }
 
 /* Highlight on hover */
 .website-list li:hover {
-  background: #222;
+  background: var(--remove-btn-bg);
 }
 
 /* The remove button that appears on hover */
 .website-list li button {
-  opacity: 0;  /* Hidden by default */
+  opacity: 0;
   padding: 6px 12px;
-  background: #333;
-  color: #fff;
+  background: var(--remove-btn-bg);
+  color: var(--remove-btn-color);
   font-size: 13px;
-  border: 1px solid #444;
+  border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Show the remove button when hovering over a website */
 .website-list li:hover button {
   opacity: 1;
 }
 
-/* Style the remove button's hover state */
 .website-list li button:hover {
-  background: #444;
-  border-color: #555;
-}
-
-/* Toggle button */
-.toggle-button {
-  width: 52px;
-  height: 28px;
-  border-radius: 14px;
-  background: #eee;
-  position: relative;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  padding: 0;
-  border: none;
-}
-
-.toggle-button::after {
-  content: '';
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 22px;
-  height: 22px;
-  background: #fff;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.toggle-button.enabled {
-  background: #000;
-}
-
-.toggle-button.enabled::after {
-  transform: translateX(24px);
+  background: var(--text-color);
+  color: var(--bg-color);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
 }
 
 /* Headers for each section */
 .section-header {
+  font-size: 14px;
+  color: var(--section-header-color);
+  margin-bottom: 8px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.section-description {
   font-size: 13px;
-  color: #666;
+  color: var(--section-description-color);
   margin-bottom: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  line-height: 1.4;
 } 

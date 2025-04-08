@@ -4,8 +4,8 @@
 <head>
   <!-- Basic stuff our popup needs -->
   <title>Focus Mode</title>
-  <!-- We're using this cool Space Grotesk font to make things look modern -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap">
+  <!-- We're using Inter font - it's super clean and easy to read -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
   <!-- This is where all our pretty styles live -->
   <link rel="stylesheet" href="popup.css">
 </head>
@@ -14,6 +14,7 @@
   <div class="container">
     <!-- The top bar with our title and on/off switch -->
     <div class="header">
+      <button id="theme-toggle" class="theme-button" title="Toggle dark mode">Dark</button>
       <h1>Focus</h1>
       <button id="toggle-mode" class="toggle-button"></button>
     </div>
@@ -21,13 +22,14 @@
     <!-- The main content area -->
     <div class="section">
       <!-- Where you type in websites to block -->
+      <div class="section-header">Add Website</div>
       <div class="website-input">
         <input type="text" id="website-input" placeholder="Add website to block" spellcheck="false">
         <button id="add-website">+</button>
       </div>
       
       <!-- Quick buttons to block common distracting sites -->
-      <div class="section-header">Quick Block Categories</div>
+      <div class="section-header">Quick Categories</div>
       <div class="quick-actions">
         <!-- Each button has a list of sites it blocks -->
         <button class="action-btn" data-sites='["facebook.com", "twitter.com", "instagram.com", "tiktok.com"]'>Social Media</button>
@@ -37,11 +39,11 @@
       </div>
 
       <!-- Shows websites you visit a lot - easy to block them! -->
-      <div class="section-header">Suggestions from History</div>
+      <div class="section-header">Suggestions</div>
       <div id="history-suggestions" class="suggestion-list"></div>
 
       <!-- List of all the websites you're currently blocking -->
-      <div class="section-header">Currently Blocked</div>
+      <div class="section-header">Blocked Sites</div>
       <ul id="blocked-websites" class="website-list"></ul>
     </div>
   </div>
