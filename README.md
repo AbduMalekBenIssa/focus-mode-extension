@@ -1,6 +1,6 @@
 # Focus Mode Chrome Extension
 
-A simple, beautiful Chrome extension to help you stay focused by blocking distracting websites. Built with vanilla JavaScript and modern CSS.
+A simple Chrome extension to help you stay focused by blocking distracting websites. Built with vanilla JavaScript and modern CSS.
 
 ## Features
 
@@ -31,7 +31,3 @@ The extension uses:
 - Modern CSS for styling
 - Chrome Extension Manifest V3
 - declarativeNetRequest API for efficient website blocking
-
-## License
-
-MIT License - feel free to use this code for your own projects! 
