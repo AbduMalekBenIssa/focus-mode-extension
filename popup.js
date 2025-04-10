@@ -68,10 +68,29 @@ document.addEventListener('DOMContentLoaded', () => {
   // Clean up website URLs to make them consistent
   // Like turning "https://www.youtube.com/watch?v=whatever" into just "youtube.com"
   function normalizeUrl(url) {
-    url = url.toLowerCase().trim();  // Make everything lowercase and remove spaces
-    url = url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '');  // Remove http:// and www.
-    url = url.split('/')[0];  // Get rid of everything after the main domain
-    return url;
+    try {
+      // If it's already a domain (no protocol), add a temporary one
+      if (!url.includes('://')) {
+        url = 'http://' + url;
+      }
+      
+      // Parse the URL
+      const parsedUrl = new URL(url);
+      let hostname = parsedUrl.hostname.toLowerCase();
+      
+      // Remove 'www.' prefix
+      if (hostname.startsWith('www.')) {
+        hostname = hostname.substring(4);
+      }
+      
+      return hostname;
+    } catch (e) {
+      // If there's any error in parsing, just clean it manually
+      url = url.toLowerCase().trim();
+      url = url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '');
+      url = url.split('/')[0];
+      return url;
+    }
   }
 
   // Check if we're already blocking a website
