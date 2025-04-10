@@ -45,6 +45,51 @@
       <!-- List of all the websites you're currently blocking -->
       <div class="section-header">Blocked Sites</div>
       <ul id="blocked-websites" class="website-list"></ul>
+      
+      <!-- Scheduling section -->
+      <div class="section-header">Schedule</div>
+      <div class="schedule-container">
+        <div class="schedule-toggle-container">
+          <label for="schedule-toggle">Enable scheduling</label>
+          <button id="schedule-toggle" class="toggle-button"></button>
+        </div>
+        
+        <!-- Current time display -->
+        <div class="current-time-display">
+          <div class="time-info">
+            <div id="current-time">--:--</div>
+            <div id="schedule-status">Schedule inactive</div>
+          </div>
+          <div class="time-indicator">
+            <div class="time-progress"></div>
+          </div>
+        </div>
+        
+        <div id="schedule-options" class="schedule-options">
+          <div class="time-picker">
+            <div class="time-field">
+              <label for="start-time">Start Time</label>
+              <input type="time" id="start-time" value="09:00">
+            </div>
+            <div class="time-field">
+              <label for="end-time">End Time</label>
+              <input type="time" id="end-time" value="17:00">
+            </div>
+          </div>
+          <div class="days-selector">
+            <div class="days-header">Days</div>
+            <div class="days-checkboxes">
+              <label><input type="checkbox" value="Mon" checked> Mon</label>
+              <label><input type="checkbox" value="Tue" checked> Tue</label>
+              <label><input type="checkbox" value="Wed" checked> Wed</label>
+              <label><input type="checkbox" value="Thu" checked> Thu</label>
+              <label><input type="checkbox" value="Fri" checked> Fri</label>
+              <label><input type="checkbox" value="Sat"> Sat</label>
+              <label><input type="checkbox" value="Sun"> Sun</label>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <!-- This is where all the magic happens -->

@@ -7,9 +7,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggleButton = document.getElementById('toggle-mode');  // The on/off switch at the top
   const historySuggestions = document.getElementById('history-suggestions');  // Where we show sites from your history
   const themeToggle = document.getElementById('theme-toggle');
+  const scheduleToggle = document.getElementById('schedule-toggle');
+  const scheduleOptions = document.getElementById('schedule-options');
+  const startTimeInput = document.getElementById('start-time');
+  const endTimeInput = document.getElementById('end-time');
+  const dayCheckboxes = document.querySelectorAll('.days-checkboxes input[type="checkbox"]');
+  const currentTimeElement = document.getElementById('current-time');
+  const scheduleStatusElement = document.getElementById('schedule-status');
+  const timeProgressElement = document.querySelector('.time-progress');
 
   // Load saved settings and theme
-  chrome.storage.sync.get(['blockedWebsites', 'enabled', 'theme'], (data) => {
+  chrome.storage.sync.get(['blockedWebsites', 'enabled', 'theme', 'schedule'], (data) => {
     console.log('Getting all your saved stuff:', data);
     // If you had any sites blocked before, let's show them
     if (data.blockedWebsites) {
@@ -32,6 +40,28 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       themeToggle.textContent = 'Dark';
       themeToggle.title = 'Switch to dark mode';
+    }
+    
+    // Load schedule settings
+    if (data.schedule) {
+      if (data.schedule.enabled) {
+        scheduleToggle.classList.add('enabled');
+        scheduleOptions.classList.add('active');
+      }
+      
+      if (data.schedule.startTime) {
+        startTimeInput.value = data.schedule.startTime;
+      }
+      
+      if (data.schedule.endTime) {
+        endTimeInput.value = data.schedule.endTime;
+      }
+      
+      if (data.schedule.days && data.schedule.days.length) {
+        dayCheckboxes.forEach(checkbox => {
+          checkbox.checked = data.schedule.days.includes(checkbox.value);
+        });
+      }
     }
   });
 
@@ -151,11 +181,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create the list item with the site name and a remove button
     li.innerHTML = `
       <span>${website}</span>
-      <button class="remove-website">Remove</button>
+      <div class="site-controls">
+        <button class="schedule-site-btn" title="Schedule blocking for this site">Schedule</button>
+        <button title="Remove from block list">Remove</button>
+      </div>
     `;
     
-    // What happens when you click the remove button
-    li.querySelector('.remove-website').addEventListener('click', () => {
+    // Setup remove button
+    const removeButton = li.querySelector('button[title="Remove from block list"]');
+    removeButton.addEventListener('click', () => {
       chrome.storage.sync.get(['blockedWebsites'], (data) => {
         // Filter out this website from the blocked list
         const blockedWebsites = data.blockedWebsites.filter(w => normalizeUrl(w) !== normalizeUrl(website));
@@ -166,6 +200,12 @@ document.addEventListener('DOMContentLoaded', () => {
           updateCategoryStates();  // Update category buttons
         });
       });
+    });
+    
+    // Setup schedule button
+    const scheduleButton = li.querySelector('.schedule-site-btn');
+    scheduleButton.addEventListener('click', () => {
+      showSiteScheduleModal(website);
     });
 
     blockedWebsitesList.appendChild(li);  // Add the new item to the list
@@ -265,4 +305,231 @@ document.addEventListener('DOMContentLoaded', () => {
     
     chrome.storage.sync.set({ theme: newTheme });
   });
+
+  // Handle schedule toggle
+  scheduleToggle.addEventListener('click', () => {
+    const isEnabled = scheduleToggle.classList.contains('enabled');
+    scheduleToggle.classList.toggle('enabled');
+    
+    if (!isEnabled) {
+      scheduleOptions.classList.add('active');
+      saveScheduleSettings(true);
+      
+      // Show a message that scheduling will override manual toggle
+      const scheduleMessage = document.createElement('div');
+      scheduleMessage.className = 'schedule-message';
+      scheduleMessage.textContent = 'Scheduling will automatically enable Focus Mode during set hours';
+      
+      // Remove any existing message first
+      const existingMessage = document.querySelector('.schedule-message');
+      if (existingMessage) {
+        existingMessage.remove();
+      }
+      
+      // Add the message after the schedule options
+      scheduleOptions.appendChild(scheduleMessage);
+      
+      // Update time display to reflect new schedule state
+      updateTimeDisplay();
+    } else {
+      scheduleOptions.classList.remove('active');
+      saveScheduleSettings(false);
+      
+      // Remove the message if it exists
+      const scheduleMessage = document.querySelector('.schedule-message');
+      if (scheduleMessage) {
+        scheduleMessage.remove();
+      }
+      
+      // Update time display to reflect new schedule state
+      updateTimeDisplay();
+    }
+  });
+  
+  // Save schedule settings when they change
+  function saveScheduleSettings(enabled = true) {
+    const days = Array.from(dayCheckboxes)
+      .filter(checkbox => checkbox.checked)
+      .map(checkbox => checkbox.value);
+      
+    const scheduleData = {
+      enabled: enabled,
+      startTime: startTimeInput.value,
+      endTime: endTimeInput.value,
+      days: days
+    };
+    
+    chrome.storage.sync.set({ schedule: scheduleData });
+  }
+  
+  // Save schedule settings when inputs change
+  startTimeInput.addEventListener('change', () => {
+    saveScheduleSettings();
+    updateTimeDisplay();
+  });
+  
+  endTimeInput.addEventListener('change', () => {
+    saveScheduleSettings();
+    updateTimeDisplay();
+  });
+  
+  dayCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+      saveScheduleSettings();
+      updateTimeDisplay();
+    });
+  });
+
+  // Function to show site-specific schedule modal
+  function showSiteScheduleModal(website) {
+    alert(`Schedule feature for ${website} will be implemented soon!`);
+    // This would normally open a modal with site-specific scheduling options
+    // For now we're keeping the interface simple with just global scheduling
+  }
+
+  // Function to update current time display
+  function updateTimeDisplay() {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const currentTimeString = `${hours}:${minutes}`;
+    
+    // Update the time display
+    currentTimeElement.textContent = currentTimeString;
+    
+    // Check schedule status
+    chrome.storage.sync.get(['schedule', 'enabled'], (data) => {
+      if (!data.schedule || !data.schedule.enabled) {
+        scheduleStatusElement.textContent = 'Schedule inactive';
+        scheduleStatusElement.classList.remove('active');
+        timeProgressElement.style.width = '0%';
+        return;
+      }
+      
+      const isWithinSchedule = isTimeWithinSchedule(now, data.schedule);
+      if (isWithinSchedule) {
+        scheduleStatusElement.textContent = 'Focus Mode active';
+        scheduleStatusElement.classList.add('active');
+        
+        // Calculate progress through scheduled time
+        const progress = calculateScheduleProgress(now, data.schedule);
+        timeProgressElement.style.width = `${progress}%`;
+      } else {
+        const nextScheduleTime = getNextScheduleTime(now, data.schedule);
+        if (nextScheduleTime) {
+          const timeUntil = formatTimeUntil(nextScheduleTime);
+          scheduleStatusElement.textContent = `Starting in ${timeUntil}`;
+          scheduleStatusElement.classList.remove('active');
+          timeProgressElement.style.width = '0%';
+        } else {
+          scheduleStatusElement.textContent = 'No upcoming schedule';
+          scheduleStatusElement.classList.remove('active');
+          timeProgressElement.style.width = '0%';
+        }
+      }
+    });
+  }
+  
+  // Function to check if current time is within scheduled hours
+  function isTimeWithinSchedule(now, schedule) {
+    if (!schedule || !schedule.enabled) return false;
+    
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const currentDay = dayNames[now.getDay()];
+    
+    // Check if today is in the scheduled days
+    if (!schedule.days.includes(currentDay)) {
+      return false;
+    }
+    
+    // Parse times
+    const [startHour, startMinute] = schedule.startTime.split(':').map(Number);
+    const [endHour, endMinute] = schedule.endTime.split(':').map(Number);
+    
+    // Create Date objects for the start and end times today
+    const startTime = new Date(now);
+    startTime.setHours(startHour, startMinute, 0);
+    
+    const endTime = new Date(now);
+    endTime.setHours(endHour, endMinute, 0);
+    
+    // Check if current time is within the scheduled block time
+    return now >= startTime && now <= endTime;
+  }
+  
+  // Calculate progress percentage through scheduled time
+  function calculateScheduleProgress(now, schedule) {
+    const [startHour, startMinute] = schedule.startTime.split(':').map(Number);
+    const [endHour, endMinute] = schedule.endTime.split(':').map(Number);
+    
+    const startTime = new Date(now);
+    startTime.setHours(startHour, startMinute, 0, 0);
+    
+    const endTime = new Date(now);
+    endTime.setHours(endHour, endMinute, 0, 0);
+    
+    const totalDuration = endTime - startTime;
+    const elapsedTime = now - startTime;
+    
+    return Math.min(100, Math.max(0, (elapsedTime / totalDuration) * 100));
+  }
+  
+  // Get the next schedule time
+  function getNextScheduleTime(now, schedule) {
+    if (!schedule || !schedule.enabled || schedule.days.length === 0) return null;
+    
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const currentDay = dayNames[now.getDay()];
+    const [startHour, startMinute] = schedule.startTime.split(':').map(Number);
+    
+    // Check if today's schedule is upcoming
+    if (schedule.days.includes(currentDay)) {
+      const startTime = new Date(now);
+      startTime.setHours(startHour, startMinute, 0, 0);
+      
+      if (startTime > now) {
+        return startTime;
+      }
+    }
+    
+    // Find the next scheduled day
+    let daysToCheck = 7; // Limit to one week
+    let nextDate = new Date(now);
+    
+    while (daysToCheck > 0) {
+      nextDate.setDate(nextDate.getDate() + 1);
+      const nextDay = dayNames[nextDate.getDay()];
+      
+      if (schedule.days.includes(nextDay)) {
+        const nextTime = new Date(nextDate);
+        nextTime.setHours(startHour, startMinute, 0, 0);
+        return nextTime;
+      }
+      
+      daysToCheck--;
+    }
+    
+    return null;
+  }
+  
+  // Format time until next schedule
+  function formatTimeUntil(futureTime) {
+    const now = new Date();
+    const diff = futureTime - now;
+    
+    if (diff < 0) return 'Now';
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    } else {
+      return `${minutes}m`;
+    }
+  }
+  
+  // Initialize time display and update every minute
+  updateTimeDisplay();
+  setInterval(updateTimeDisplay, 30000); // Update every 30 seconds
 }); 
