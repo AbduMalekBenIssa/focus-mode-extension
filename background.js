@@ -91,34 +91,36 @@ async function updateBlockingRules() {
   if (!shouldEnforce) {
     console.log('Focus Mode is off or outside scheduled hours, letting all sites through!');
     await chrome.declarativeNetRequest.updateDynamicRules({
-      removeRuleIds: [1]
+      removeRuleIds: Array.from({ length: 100 }, (_, i) => i + 1)
     });
     return;
   }
 
   // If we've got some sites to block, let's set that up
   if (data.blockedWebsites && data.blockedWebsites.length > 0) {
-    // This is our blocking rule - it tells Chrome what to do when someone tries to visit a blocked site
-    const rule = {
-      id: 1,  // We just use one rule for everything
-      priority: 1,
-      action: { 
-        type: "redirect",  // When they hit a blocked site...
-        redirect: { extensionPath: "/blocked.html" }  // ...show them our blocked page instead!
-      },
-      condition: {
-        // Match any blocked site, whether it starts with www. or not
-        urlFilter: data.blockedWebsites.map(site => `*://*.${site}/*`).join('|'),
-        resourceTypes: ["main_frame"]  // Only block the main page, not images or other stuff
-      }
-    };
-
-    // Out with the old rules, in with the new!
-    await chrome.declarativeNetRequest.updateDynamicRules({
-      removeRuleIds: [1],
-      addRules: [rule]
+    // Create individual rules for each website for more reliable blocking
+    const rules = data.blockedWebsites.map((site, index) => {
+      return {
+        id: index + 1,
+        priority: 1,
+        action: {
+          type: "redirect",
+          redirect: { extensionPath: "/blocked.html" }
+        },
+        condition: {
+          urlFilter: `*://*.${site}*`,
+          resourceTypes: ["main_frame"]
+        }
+      };
     });
-    console.log('Alright, new blocking rules are ready to go:', rule);
+
+    // Clear any existing rules first
+    await chrome.declarativeNetRequest.updateDynamicRules({
+      removeRuleIds: Array.from({ length: 100 }, (_, i) => i + 1),
+      addRules: rules
+    });
+    
+    console.log('Blocking rules updated:', rules);
   }
 }
 
@@ -164,9 +166,39 @@ updateBlockingRules();
 updateFocusModeUI();
 
 // Keep an eye on what tabs are open and update blocking as needed
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   // We only care when a page is loading up
   if (changeInfo.status === 'loading' && tab.url) {
+    // Force an immediate check to see if we should block this tab
+    const data = await chrome.storage.sync.get(['enabled', 'blockedWebsites', 'schedule']);
+    
+    // Check if Focus Mode is enabled directly or by schedule
+    const shouldBlockBySchedule = data.schedule && data.schedule.enabled && shouldBlockBasedOnSchedule(data.schedule);
+    const isEnabled = shouldBlockBySchedule || (data.enabled && (!data.schedule || !data.schedule.enabled));
+    
+    // If enabled and this URL matches a blocked site, redirect immediately
+    if (isEnabled && data.blockedWebsites && data.blockedWebsites.length > 0) {
+      try {
+        const url = new URL(tab.url);
+        const hostname = url.hostname.toLowerCase();
+        
+        // Check each blocked site
+        for (const site of data.blockedWebsites) {
+          // Match the domain part (accounting for www. or not)
+          if (hostname === site || hostname === `www.${site}` || hostname.endsWith(`.${site}`)) {
+            console.log(`Blocking direct access to: ${hostname}`);
+            chrome.tabs.update(tabId, {
+              url: chrome.runtime.getURL('blocked.html')
+            });
+            break;
+          }
+        }
+      } catch (e) {
+        console.error('Error checking URL:', e);
+      }
+    }
+    
+    // Also update general rules
     updateBlockingRules();
   }
 }); 
