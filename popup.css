@@ -1,36 +1,5 @@
-/* Theme variables - light mode by default */
+/* Theme variables - dark mode only */
 :root {
-  --bg-color: #ffffff;
-  --text-color: #000000;
-  --border-color: #d0d0d0;
-  --input-bg: #f0f0f0;
-  --input-border: #d0d0d0;
-  --section-bg: #ffffff;
-  --suggestion-bg: #f0f0f0;
-  --suggestion-color: #505050;
-  --suggestion-border: #d0d0d0;
-  --action-btn-bg: #f0f0f0;
-  --action-btn-border: #d0d0d0;
-  --action-btn-color: #000000;
-  --website-list-bg: #f0f0f0;
-  --website-item-bg: #ffffff;
-  --website-item-color: #000000;
-  --website-item-border: #d0d0d0;
-  --remove-btn-bg: #f0f0f0;
-  --remove-btn-color: #000000;
-  --remove-btn-border: #d0d0d0;
-  --remove-btn-hover-bg: #ff4444;
-  --remove-btn-hover-color: #ffffff;
-  --header-btn-bg: #f0f0f0;
-  --header-btn-color: #000000;
-  --section-header-color: #505050;
-  --section-description-color: #707070;
-  --toggle-enabled-bg: #4CAF50;
-  --toggle-disabled-bg: #e0e0e0;
-}
-
-/* Dark mode styles */
-[data-theme="dark"] {
   --bg-color: #101010;
   --text-color: #ffffff;
   --border-color: #333333;
@@ -58,11 +27,13 @@
   --section-description-color: #a0a0a0;
   --toggle-enabled-bg: #4CAF50;
   --toggle-disabled-bg: #2a2a2a;
+  --website-item-hover-bg: #2a2a2a;
+  --website-item-hover-border: #444444;
 }
 
 /* Basic setup for the whole popup */
 body {
-  width: 400px;  /* Increased from 350px for more breathing room */
+  width: 400px;
   margin: 0;
   padding: 0;
   background-color: var(--bg-color);
@@ -75,14 +46,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Header buttons container */
-.header-buttons {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
 /* The header with the title and toggle */
 .header {
   display: flex;
@@ -91,7 +54,6 @@ body {
   margin-bottom: 20px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border-color);
-  gap: 16px;
 }
 
 .header h1 {
@@ -103,80 +65,14 @@ body {
   flex: 1;
 }
 
-/* Theme toggle button - dark by default in light mode */
-.theme-button {
-  padding: 8px 12px;
-  min-width: 45px;
-  height: 32px;
-  border: none;
-  background: #1a1a1a;
-  color: #ffffff;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+/* Remove theme toggle button styles */
+
+/* Header buttons container */
+.header-buttons {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-size: 13px;
-  font-weight: 500;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.theme-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.theme-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* When in dark mode, style the Light button */
-[data-theme="dark"] .theme-button {
-  background: #ffffff;
-  color: #1a1a1a;
-}
-
-/* The on/off toggle switch */
-.toggle-button {
-  position: relative;
-  width: 60px;
-  height: 32px;
-  border-radius: 16px;
-  background: var(--toggle-disabled-bg);
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* The sliding circle in the toggle */
-.toggle-button::before {
-  content: '';
-  position: absolute;
-  left: 4px;
-  top: 4px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: white;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-/* When the toggle is enabled */
-.toggle-button.enabled {
-  background: var(--toggle-enabled-bg);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.toggle-button.enabled::before {
-  left: 32px;
-  background: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  justify-content: space-between;
+  gap: 16px;
 }
 
 /* Keep everything stacked neatly in a column */
@@ -233,21 +129,61 @@ h3 {
 }
 
 .time-picker {
-  padding: 12px 16px;
-  border: 1px solid #eee;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background: var(--bg-color);
   border-radius: 12px;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 15px;
-  background: #fafafa;
-  color: #000;
-  transition: all 0.2s ease;
-  width: 120px;
 }
 
-.time-picker:focus {
-  outline: none;
-  border-color: #000;
-  background: #fff;
+.time-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.time-field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: 8px;
+}
+
+.time-field input[type="time"] {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--website-item-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  color: var(--text-color);
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 120px;
+  max-width: 140px;
+  padding-right: 45px; /* Make room for AM/PM indicator */
+}
+
+.time-field input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.time-format {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  font-size: 12px;
+  color: var(--text-color);
+  opacity: 0.8;
+  pointer-events: none;
 }
 
 /* The box where you type in websites */
@@ -314,18 +250,28 @@ h3 {
 
 /* Each category button */
 .action-btn {
-  padding: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
   background: var(--action-btn-bg);
   color: var(--action-btn-color);
-  border: none;
-  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
   font-size: 14px;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  font-weight: 500;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.action-btn .material-icons {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -1px;
 }
 
 .action-btn:hover {
@@ -359,30 +305,64 @@ h3 {
 
 /* Each suggestion bubble */
 .suggestion {
-  background: var(--suggestion-bg);
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  cursor: pointer;
-  color: var(--suggestion-color);
-  border: none;
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--website-item-bg);
+  margin-bottom: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--website-item-border);
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  color: var(--website-item-color);
+  cursor: pointer;
 }
 
 .suggestion:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-  background: var(--text-color);
-  color: var(--bg-color);
+  background: var(--website-item-hover-bg);
+  border-color: var(--website-item-hover-border);
 }
 
-/* Gray out suggestions that are already blocked */
+.favicon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.website-favicon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.website-text {
+  flex-grow: 1;
+  margin-right: 12px;
+  font-size: 14px;
+}
+
+.suggestion-favicon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
 .suggestion.already-blocked {
-  opacity: 0.5;
-  text-decoration: line-through;
+  opacity: 0.6;
   cursor: not-allowed;
-  background: var(--action-btn-bg);
+  text-decoration: line-through;
+}
+
+.suggestion.already-blocked:hover {
+  background: var(--website-item-bg);
+  border-color: var(--website-item-border);
 }
 
 /* The list of currently blocked sites */
@@ -415,16 +395,19 @@ h3 {
 /* Each blocked website in the list */
 .website-list li {
   display: flex;
-  justify-content: space-between;  /* Website on left, remove button on right */
   align-items: center;
-  padding: 12px 16px;
+  padding: 10px 12px;
   background: var(--website-item-bg);
   margin-bottom: 8px;
-  border-radius: 12px;
-  font-size: 14px;
+  border-radius: 8px;
   border: 1px solid var(--website-item-border);
   transition: all 0.2s ease;
   color: var(--website-item-color);
+}
+
+.website-list li span {
+  flex-grow: 1;
+  margin-right: 8px;
 }
 
 /* Highlight on hover */
@@ -651,4 +634,836 @@ h3 {
   background: var(--toggle-enabled-bg);
   border-radius: 2px;
   transition: width 0.3s ease;
+}
+
+.suggestion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.suggestion-favicon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* Add a subtle hover effect for the favicons */
+.website-list li:hover .website-favicon,
+.suggestion:hover .suggestion-favicon {
+  transform: scale(1.1);
+}
+
+.site-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.website-list li:hover .site-controls {
+  opacity: 1;
+}
+
+.remove-website {
+  background: var(--remove-btn-bg);
+  color: var(--remove-btn-color);
+  border: none;
+  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.remove-website:hover {
+  background: var(--remove-btn-hover-bg);
+  color: var(--remove-btn-hover-color);
+  transform: scale(1.1);
+}
+
+.schedule-site-btn {
+  background: var(--action-btn-bg);
+  color: var(--action-btn-color);
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.schedule-site-btn:hover {
+  transform: scale(1.1);
+  background: var(--text-color);
+  color: var(--bg-color);
+}
+
+/* The on/off toggle switch */
+.toggle-button {
+  position: relative;
+  width: 60px;
+  height: 32px;
+  border-radius: 16px;
+  background: var(--toggle-disabled-bg);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* The sliding circle in the toggle */
+.toggle-button::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: white;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* When the toggle is enabled */
+.toggle-button.enabled {
+  background: var(--toggle-enabled-bg);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.toggle-button.enabled::before {
+  left: 32px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Status Badge */
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--website-item-bg);
+  border-radius: 24px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.status-badge:hover {
+  transform: translateY(-1px);
+}
+
+.status-badge .material-icons {
+  font-size: 20px;
+}
+
+.status-badge.active {
+  background: var(--toggle-enabled-bg);
+}
+
+/* Section Headers */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: var(--section-header-color);
+  font-weight: 600;
+}
+
+.section-header .material-icons {
+  font-size: 20px;
+  opacity: 0.8;
+}
+
+/* Smart Input Container */
+.smart-input-container {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--website-item-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-top: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+  z-index: 10;
+}
+
+.suggestions-dropdown.active {
+  display: block;
+}
+
+/* Collapsible Categories */
+.collapsible {
+  margin-bottom: 16px;
+}
+
+.collapsible-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--website-item-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.collapsible-header:hover {
+  background: var(--website-item-hover-bg);
+}
+
+.collapsible-header .arrow {
+  margin-left: auto;
+  transition: transform 0.2s ease;
+}
+
+.collapsible.active .arrow {
+  transform: rotate(180deg);
+}
+
+.collapsible-content {
+  display: none;
+  padding: 12px;
+  background: var(--website-item-bg);
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.collapsible.active .collapsible-content {
+  display: block;
+}
+
+/* Quick Actions */
+.quick-actions {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+/* Blocked Sites Container */
+.blocked-sites-container {
+  max-height: 160px;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+/* Header with Toggle */
+.header-with-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Sections */
+.section {
+  background: var(--section-bg);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 16px;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--website-item-bg);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+/* Common Pill Styles */
+.pill-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--website-item-bg);
+  border-radius: 24px;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-color);
+}
+
+.pill-container:hover {
+  transform: translateY(-1px);
+  background: var(--website-item-hover-bg);
+  border-color: var(--website-item-hover-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.pill-container.active {
+  background: var(--toggle-enabled-bg);
+  border-color: var(--toggle-enabled-bg);
+  color: white;
+}
+
+.pill-container .material-icons {
+  font-size: 20px;
+}
+
+/* Status Badge */
+.status-badge {
+  composes: pill-container;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+/* Section Headers with Toggle */
+.header-with-toggle {
+  composes: pill-container;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Quick Categories */
+.collapsible-header {
+  composes: pill-container;
+  width: 100%;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.collapsible-content {
+  background: var(--website-item-bg);
+  border-radius: 16px;
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: none;
+}
+
+.collapsible.active .collapsible-content {
+  display: block;
+  animation: slideDown 0.2s ease;
+}
+
+/* Quick Action Buttons */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  padding: 4px;
+}
+
+.action-btn {
+  background: var(--action-btn-bg);
+  color: var(--action-btn-color);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+  background: var(--website-item-hover-bg);
+  border-color: var(--website-item-hover-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.action-btn.active {
+  background: var(--toggle-enabled-bg);
+  border-color: var(--toggle-enabled-bg);
+  color: white;
+}
+
+/* Schedule Section */
+.schedule-container {
+  background: var(--website-item-bg);
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.time-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.time-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.time-field label {
+  font-size: 12px;
+  color: var(--section-description-color);
+  font-weight: 500;
+}
+
+.time-field input {
+  background: var(--action-btn-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 8px 12px;
+  color: var(--text-color);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.time-field input:hover {
+  border-color: var(--website-item-hover-border);
+}
+
+.time-field input:focus {
+  outline: none;
+  border-color: var(--toggle-enabled-bg);
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+/* Days Selector */
+.days-selector {
+  background: var(--action-btn-bg);
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.days-header {
+  font-size: 12px;
+  color: var(--section-description-color);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.days-checkboxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  gap: 8px;
+}
+
+.days-checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.days-checkboxes label:hover {
+  background: var(--website-item-hover-bg);
+}
+
+.days-checkboxes input[type="checkbox"] {
+  accent-color: var(--toggle-enabled-bg);
+  cursor: pointer;
+}
+
+/* Current Time Display */
+.current-time-display {
+  background: var(--action-btn-bg);
+  border-radius: 12px;
+  padding: 12px;
+  margin: 16px 0;
+  border: 1px solid var(--border-color);
+}
+
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+#current-time {
+  font-size: 18px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+#schedule-status {
+  font-size: 13px;
+  color: var(--section-description-color);
+}
+
+#schedule-status.active {
+  color: var(--toggle-enabled-bg);
+  font-weight: 500;
+}
+
+.time-indicator {
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.time-progress {
+  height: 100%;
+  width: 0%;
+  background: var(--toggle-enabled-bg);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Keep existing styles for website-list, favicon-container, etc. */
+
+/* Schedule Section Styles */
+.schedule-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  margin-bottom: 16px;
+  background: var(--website-item-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.schedule-header:hover {
+  transform: translateY(-1px);
+  background: var(--website-item-hover-bg);
+  border-color: var(--website-item-hover-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.schedule-container {
+  margin-top: 16px;
+  background: var(--website-item-bg);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+/* Current Time Display */
+.current-time-display {
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background: var(--bg-color);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+#current-time {
+  font-size: 24px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-color);
+}
+
+#schedule-status {
+  font-size: 14px;
+  color: var(--section-description-color);
+  transition: color 0.2s ease;
+}
+
+#schedule-status.active {
+  color: var(--toggle-enabled-bg);
+  font-weight: 500;
+}
+
+/* Time Picker */
+.time-picker {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background: var(--bg-color);
+  border-radius: 12px;
+}
+
+.time-field {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.time-field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: 8px;
+}
+
+.time-field input[type="time"] {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--website-item-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  color: var(--text-color);
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 20px;
+  max-width: 70px;
+}
+
+.time-field input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+/* Days Selector */
+.days-selector {
+  padding: 16px;
+  background: var(--bg-color);
+  border-radius: 12px;
+}
+
+.days-header {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.days-header::before {
+  content: 'Active Days';
+  color: var(--text-color);
+}
+
+.days-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.day-toggle {
+  padding: 6px 12px;
+  background: var(--website-item-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  color: var(--text-color);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.day-toggle:hover {
+  transform: translateY(-1px);
+  background: var(--website-item-hover-bg);
+  border-color: var(--website-item-hover-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.day-toggle.active {
+  background: var(--toggle-enabled-bg);
+  border-color: var(--toggle-enabled-bg);
+  color: white;
+  box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
+}
+
+.day-toggle.active:hover {
+  background: var(--toggle-enabled-bg);
+  filter: brightness(1.1);
+  box-shadow: 0 0 16px rgba(76, 175, 80, 0.4);
+}
+
+/* Time Progress Bar */
+.time-indicator {
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.time-progress {
+  height: 100%;
+  width: 0%;
+  background: var(--toggle-enabled-bg);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Toggle Button */
+.toggle-button {
+  width: 40px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--website-item-bg);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.toggle-button::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: var(--text-color);
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.toggle-button.enabled {
+  background: var(--toggle-enabled-bg);
+  border-color: var(--toggle-enabled-bg);
+}
+
+.toggle-button.enabled::before {
+  left: 22px;
+  background: white;
+}
+
+/* Schedule Options Container */
+.schedule-options {
+  display: none;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+.schedule-options.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.category-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.category-buttons .action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  background: var(--action-btn-bg);
+  color: var(--action-btn-color);
+  border: 1px solid var(--border-color);
+}
+
+.category-buttons .action-btn i {
+  font-size: 16px;
+}
+
+.category-buttons .action-btn:hover:not(:disabled) {
+  background: var(--action-btn-hover-bg);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.category-buttons .action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--disabled-bg);
+  border-color: var(--disabled-border);
+}
+
+.category-buttons .action-btn.active {
+  background: var(--toggle-enabled-bg);
+  border-color: var(--toggle-enabled-bg);
+  color: white;
+}
+
+.category-buttons .action-btn.active:hover:not(:disabled) {
+  filter: brightness(1.1);
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
 } 

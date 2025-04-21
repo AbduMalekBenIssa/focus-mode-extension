@@ -1,4 +1,4 @@
-# Focus Mode Chrome Extension
+# FlowGuard Chrome Extension
 
 A simple Chrome extension to help you stay focused by blocking distracting websites. Built with vanilla JavaScript and modern CSS.
 
@@ -19,8 +19,8 @@ A simple Chrome extension to help you stay focused by blocking distracting websi
 
 ## Usage
 
-1. Click the Focus Mode icon in your Chrome toolbar
-2. Toggle Focus Mode on/off using the switch
+1. Click the FlowGuard icon in your Chrome toolbar
+2. Toggle FlowGuard on/off using the switch
 3. Add websites to block by typing them in or using the quick-block categories
 4. Remove blocked sites by hovering over them and clicking "Remove"
 
