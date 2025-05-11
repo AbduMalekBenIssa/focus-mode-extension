@@ -19,16 +19,28 @@
   --remove-btn-bg: #2a2a2a;
   --remove-btn-color: #ffffff;
   --remove-btn-border: #333333;
-  --remove-btn-hover-bg: #ff4444;
-  --remove-btn-hover-color: #ffffff;
+  --remove-btn-hover-bg: var(--accent-red);
+  --remove-btn-hover-color: var(--text-on-accent);
   --header-btn-bg: #2a2a2a;
   --header-btn-color: #ffffff;
   --section-header-color: #d0d0d0;
   --section-description-color: #a0a0a0;
-  --toggle-enabled-bg: #4CAF50;
+  --toggle-enabled-bg: var(--accent-green);
   --toggle-disabled-bg: #2a2a2a;
   --website-item-hover-bg: #2a2a2a;
   --website-item-hover-border: #444444;
+
+  /* New Accent Colors */
+  --accent-green: #4CAF50;
+  --accent-red: #F44336;
+  --accent-blue: #2196F3;
+  --accent-inactive-bg: var(--accent-red);
+  --text-on-accent: #FFFFFF;
+  --subtle-accent-blue-bg: rgba(33, 150, 243, 0.1);
+
+  /* New AM/PM indicator colors */
+  --am-color: #FFD700; /* Yellow for AM */
+  --pm-color: #2196F3; /* Blue for PM */
 }
 
 /* Basic setup for the whole popup */
@@ -140,9 +152,11 @@ h3 {
 }
 
 .time-field {
+  flex: 1;
   position: relative;
   display: flex;
   flex-direction: column;
+  min-width: 110px; /* Ensure container has minimum width */
 }
 
 .time-field label {
@@ -155,7 +169,7 @@ h3 {
 
 .time-field input[type="time"] {
   width: 100%;
-  padding: 8px 12px;
+  padding: 8px 24px 8px 10px; /* Reduced right padding */
   background: var(--website-item-bg);
   border: 1px solid var(--border-color);
   border-radius: 999px;
@@ -165,25 +179,37 @@ h3 {
   transition: all 0.2s ease;
   -webkit-appearance: none;
   appearance: none;
-  min-width: 120px;
-  max-width: 140px;
-  padding-right: 45px; /* Make room for AM/PM indicator */
+  min-width: 90px; /* Adjusted min-width */
+  max-width: 140px; /* Increased max-width */
+  box-sizing: border-box;
+  text-align: left;
 }
 
 .time-field input[type="time"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-  opacity: 0.7;
-  cursor: pointer;
+  opacity: 0; /* Hide the icon but keep it clickable */
+  cursor: pointer; /* Ensure cursor indicates clickability */
 }
 
+/* Hide AM/PM text indicators */
 .time-format {
-  position: absolute;
-  right: 8px;
-  bottom: 8px;
-  font-size: 12px;
-  color: var(--text-color);
-  opacity: 0.8;
-  pointer-events: none;
+  display: none; /* Hide the AM/PM text completely */
+}
+
+/* Color-code time inputs based on AM/PM - with more subtle styling */
+.time-field input[type="time"].am-time {
+  color: var(--am-color); /* Yellow for AM times */
+  font-weight: 500; /* Slightly less bold */
+  border-color: rgba(255, 215, 0, 0.4); /* More transparent yellow border */
+  box-shadow: 0 0 2px rgba(255, 215, 0, 0.3); /* Very subtle yellow glow */
+  background-color: rgba(255, 215, 0, 0.03); /* Nearly invisible yellow background */
+}
+
+.time-field input[type="time"].pm-time {
+  color: var(--pm-color); /* Blue for PM times */
+  font-weight: 500; /* Slightly less bold */
+  border-color: rgba(33, 150, 243, 0.4); /* More transparent blue border */
+  box-shadow: 0 0 2px rgba(33, 150, 243, 0.3); /* Very subtle blue glow */
+  background-color: rgba(33, 150, 243, 0.03); /* Nearly invisible blue background */
 }
 
 /* The box where you type in websites */
@@ -221,8 +247,8 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--text-color);
-  color: var(--bg-color);
+  background: var(--accent-blue);
+  color: var(--text-on-accent);
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -545,32 +571,33 @@ h3 {
   position: relative;
 }
 
-.website-list li .site-controls {
+.site-controls {
   display: flex;
-  gap: 8px;
   align-items: center;
-}
-
-.schedule-site-btn {
   opacity: 0;
-  padding: 6px;
-  background: var(--action-btn-bg);
-  color: var(--text-color);
-  font-size: 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: opacity 0.2s ease;
 }
 
-.website-list li:hover .schedule-site-btn {
+.website-list li:hover .site-controls {
   opacity: 1;
 }
 
-.website-list li .schedule-site-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+.remove-website {
+  background-color: transparent;
+  color: #F44336; /* Red color */
+  border: none;
+  font-size: 20px; /* Larger font size for the times symbol */
+  font-weight: normal;
+  cursor: pointer;
+  padding: 2px 8px;
+  margin-left: 8px;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.remove-website:hover {
+  transform: scale(1.2);
+  opacity: 0.9;
 }
 
 /* Schedule message */
@@ -591,29 +618,34 @@ h3 {
 
 /* Current time display */
 .current-time-display {
-  background: var(--input-bg);
-  border-radius: 8px;
-  padding: 12px;
+  padding: 12px 16px;
   margin-bottom: 16px;
-  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  border-radius: 12px;
+  transition: all 0.2s ease;
 }
 
 .time-info {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
+  flex-direction: column; /* Stack items vertically */
+  align-items: flex-start; /* Align items to the start */
+  justify-content: center;
+  gap: 4px; /* Space between time and text */
 }
 
 #current-time {
-  font-size: 18px;
+  font-size: 28px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  color: var(--text-color);
+  white-space: nowrap;
 }
 
 #schedule-status {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--section-description-color);
+  transition: color 0.2s ease;
+  margin-left: 0px; /* Adjust this value to move it further to the left */
 }
 
 #schedule-status.active {
@@ -657,57 +689,6 @@ h3 {
 .website-list li:hover .website-favicon,
 .suggestion:hover .suggestion-favicon {
   transform: scale(1.1);
-}
-
-.site-controls {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.website-list li:hover .site-controls {
-  opacity: 1;
-}
-
-.remove-website {
-  background: var(--remove-btn-bg);
-  color: var(--remove-btn-color);
-  border: none;
-  border-radius: 6px;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  padding: 0;
-}
-
-.remove-website:hover {
-  background: var(--remove-btn-hover-bg);
-  color: var(--remove-btn-hover-color);
-  transform: scale(1.1);
-}
-
-.schedule-site-btn {
-  background: var(--action-btn-bg);
-  color: var(--action-btn-color);
-  border: none;
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.schedule-site-btn:hover {
-  transform: scale(1.1);
-  background: var(--text-color);
-  color: var(--bg-color);
 }
 
 /* The on/off toggle switch */
@@ -928,23 +909,26 @@ h3 {
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: var(--website-item-bg);
+  background: var(--website-item-bg); /* Default background for pills */
   border-radius: 24px;
   transition: all 0.2s ease;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-color); /* Default border for pills */
+  font-size: 14px;
+  color: var(--text-color); /* Default text color for pills */
 }
 
 .pill-container:hover {
   transform: translateY(-1px);
+  /* General hover for pills - can be overridden by specific states like active/inactive */
   background: var(--website-item-hover-bg);
   border-color: var(--website-item-hover-border);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .pill-container.active {
-  background: var(--toggle-enabled-bg);
+  background: var(--toggle-enabled-bg); /* Green for active */
   border-color: var(--toggle-enabled-bg);
-  color: white;
+  color: var(--text-on-accent);
 }
 
 .pill-container .material-icons {
@@ -953,9 +937,37 @@ h3 {
 
 /* Status Badge */
 .status-badge {
-  composes: pill-container;
+  /* Inherits from .pill-container: display, gap, padding, border-radius, base font-size, base transitions */
+  /* It does NOT compose: pill-container here, as that CSS feature isn't standard/reliable. */
+  /* Instead, it gets .pill-container class in HTML and specific overrides here. */
   margin-bottom: 16px;
   cursor: pointer;
+}
+
+/* Inactive state: Red background and border, white text */
+.status-badge:not(.active) {
+  background-color: var(--accent-inactive-bg);
+  border-color: var(--accent-inactive-bg);
+  color: var(--text-on-accent);
+}
+
+/* Specific hover for inactive (red) state */
+.status-badge:not(.active):hover {
+  background-color: var(--accent-inactive-bg); /* Keep red background */
+  border-color: var(--accent-inactive-bg);   /* Keep red border */
+  filter: brightness(1.15); /* Make the red a bit brighter on hover */
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.25); /* Subtle red shadow */
+}
+
+/* Active state: Green background and border, white text (already handled by .pill-container.active) */
+/* .status-badge.active inherits from .pill-container.active */
+
+/* Specific hover for active (green) state */
+.status-badge.active:hover {
+  background-color: var(--toggle-enabled-bg); /* Keep green background */
+  border-color: var(--toggle-enabled-bg);   /* Keep green border */
+  filter: brightness(1.15); /* Make the green a bit brighter on hover */
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.25); /* Subtle green shadow */
 }
 
 /* Section Headers with Toggle */
@@ -1027,7 +1039,13 @@ h3 {
 .action-btn.active {
   background: var(--toggle-enabled-bg);
   border-color: var(--toggle-enabled-bg);
-  color: white;
+  color: var(--text-on-accent);
+}
+
+.action-btn.active:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
 }
 
 /* Schedule Section */
@@ -1186,11 +1204,11 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 12px;
+  padding: 8px 16px;
   margin-bottom: 16px;
   background: var(--website-item-bg);
   border: 1px solid var(--border-color);
-  border-radius: 999px;
+  border-radius: 24px;
   transition: all 0.2s ease;
   font-size: 14px;
   font-weight: 500;
@@ -1201,6 +1219,10 @@ h3 {
   background: var(--website-item-hover-bg);
   border-color: var(--website-item-hover-border);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.schedule-header .header-left .material-icons {
+  font-size: 20px;
 }
 
 .schedule-container {
@@ -1221,22 +1243,25 @@ h3 {
 
 .time-info {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
 }
 
 #current-time {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--text-color);
+  white-space: nowrap;
 }
 
 #schedule-status {
   font-size: 14px;
   color: var(--section-description-color);
   transition: color 0.2s ease;
+  margin-left: 0px;
 }
 
 #schedule-status.active {
@@ -1273,7 +1298,7 @@ h3 {
 
 .time-field input[type="time"] {
   width: 100%;
-  padding: 8px 12px;
+  padding: 8px 28px 8px 10px;
   background: var(--website-item-bg);
   border: 1px solid var(--border-color);
   border-radius: 999px;
@@ -1283,14 +1308,15 @@ h3 {
   transition: all 0.2s ease;
   -webkit-appearance: none;
   appearance: none;
-  min-width: 20px;
-  max-width: 70px;
+  min-width: 100px;
+  max-width: 130px;
+  box-sizing: border-box;
+  text-align: left;
 }
 
 .time-field input[type="time"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-  opacity: 0.7;
-  cursor: pointer;
+  opacity: 0; /* Hide the icon but keep it clickable */
+  cursor: pointer; /* Ensure cursor indicates clickability */
 }
 
 /* Days Selector */
@@ -1308,11 +1334,6 @@ h3 {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.days-header::before {
-  content: 'Active Days';
-  color: var(--text-color);
 }
 
 .days-toggles {
@@ -1344,7 +1365,7 @@ h3 {
 .day-toggle.active {
   background: var(--toggle-enabled-bg);
   border-color: var(--toggle-enabled-bg);
-  color: white;
+  color: var(--text-on-accent);
   box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
 }
 
@@ -1418,6 +1439,7 @@ h3 {
   transform: translateY(0);
 }
 
+/* Category Buttons Styling */
 .category-buttons {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -1430,7 +1452,7 @@ h3 {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px;
+  padding: 10px 16px;
   border-radius: 20px;
   font-size: 14px;
   font-weight: 500;
@@ -1438,14 +1460,18 @@ h3 {
   background: var(--action-btn-bg);
   color: var(--action-btn-color);
   border: 1px solid var(--border-color);
+  cursor: pointer;
 }
 
-.category-buttons .action-btn i {
-  font-size: 16px;
+.category-buttons .action-btn i,
+.category-buttons .action-btn .material-icons {
+  font-size: 18px;
 }
 
-.category-buttons .action-btn:hover:not(:disabled) {
+/* Hover on INACTIVE buttons only */
+.category-buttons .action-btn:not(.active):hover:not(:disabled) {
   background: var(--action-btn-hover-bg);
+  border-color: var(--action-btn-hover-border);
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -1455,15 +1481,22 @@ h3 {
   cursor: not-allowed;
   background: var(--disabled-bg);
   border-color: var(--disabled-border);
+  transform: none;
+  box-shadow: none;
 }
 
 .category-buttons .action-btn.active {
   background: var(--toggle-enabled-bg);
   border-color: var(--toggle-enabled-bg);
-  color: white;
+  color: var(--text-on-accent);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
+/* Hover on ACTIVE buttons */
 .category-buttons .action-btn.active:hover:not(:disabled) {
-  filter: brightness(1.1);
-  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
-} 
+  background: var(--toggle-enabled-bg); /* Keep green background on hover */
+  filter: brightness(1.1); /* Make slightly brighter on hover */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3); /* Slightly stronger shadow */
+}
+/* End of Category Buttons Styling */ 
