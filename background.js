@@ -62,29 +62,49 @@ function shouldBlockBasedOnSchedule(schedule) {
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const currentDay = dayNames[now.getDay()];
   
-  if (!schedule.days.includes(currentDay)) {
+  if (!schedule.days || !Array.isArray(schedule.days) || !schedule.days.includes(currentDay)) {
     return false;
   }
   
-  const currentTime = now.toLocaleTimeString('en-US', { 
+  // Robust time parsing helper
+  const parseTimeToMinutes = (timeStr) => {
+    if (!timeStr || typeof timeStr !== 'string' || !/^\d{2}:\d{2}$/.test(timeStr)) {
+      return NaN; // Invalid format
+    }
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+      return NaN; // Invalid numbers
+    }
+    return hours * 60 + minutes;
+  };
+
+  const startMinutes = parseTimeToMinutes(schedule.startTime);
+  const endMinutes = parseTimeToMinutes(schedule.endTime);
+
+  if (isNaN(startMinutes) || isNaN(endMinutes)) {
+    // If start or end time is invalid, the schedule is not active for time-based blocking
+    return false;
+  }
+  
+  const currentTimeStr = now.toLocaleTimeString('en-US', { 
     hour: '2-digit', 
     minute: '2-digit', 
     hour12: false 
   });
+  // current time string from toLocaleTimeString should be reliable, but parse it robustly too for consistency
+  const currentMinutes = parseTimeToMinutes(currentTimeStr); 
   
-  const [currentHour, currentMinute] = currentTime.split(':').map(Number);
-  const [startHour, startMinute] = schedule.startTime.split(':').map(Number);
-  const [endHour, endMinute] = schedule.endTime.split(':').map(Number);
-  
-  const current = currentHour * 60 + currentMinute;
-  const start = startHour * 60 + startMinute;
-  const end = endHour * 60 + endMinute;
-  
-  if (end < start) {
-    // Handle overnight schedules
-    return current >= start || current <= end;
+  if (isNaN(currentMinutes)) {
+    // Should not happen with toLocaleTimeString, but as a safeguard
+    console.error('Failed to parse current time:', currentTimeStr);
+    return false; 
   }
-  return current >= start && current <= end;
+  
+  if (endMinutes < startMinutes) {
+    // Handle overnight schedules
+    return currentMinutes >= startMinutes || currentMinutes <= endMinutes;
+  }
+  return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
 }
 
 // This is where the magic happens - setting up our website blocker!
