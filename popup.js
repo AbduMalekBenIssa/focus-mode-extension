@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const scheduleOptions = document.getElementById('schedule-options');
   const startTimeInput = document.getElementById('start-time');
   const endTimeInput = document.getElementById('end-time');
+  const startTimeFormatSpan = startTimeInput.parentElement.querySelector('.time-format');
+  const endTimeFormatSpan = endTimeInput.parentElement.querySelector('.time-format');
   const dayCheckboxes = document.querySelectorAll('.days-checkboxes input[type="checkbox"]');
   const currentTimeElement = document.getElementById('current-time');
   const scheduleStatusElement = document.getElementById('schedule-status');
@@ -87,13 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateBlockedWebsitesList() {
     blockedWebsitesList.innerHTML = '';
     blockedWebsites.forEach(website => {
-      const li = document.createElement('li');
-      li.innerHTML = `
-        <img src="https://www.google.com/s2/favicons?domain=${website}" alt="favicon">
-        <span>${website}</span>
-        <button class="remove-btn" data-website="${website}">×</button>
-      `;
-      li.querySelector('.remove-btn').addEventListener('click', () => removeWebsite(website));
+      const li = createWebsiteListItem(website);
       blockedWebsitesList.appendChild(li);
     });
   }
@@ -251,16 +247,49 @@ document.addEventListener('DOMContentLoaded', () => {
     saveSchedule();
   });
 
+  // Add input event listeners for immediate AM/PM feedback
+  startTimeInput.addEventListener('input', () => {
+    updateTimeFormat(startTimeInput, startTimeFormatSpan);
+  });
+
+  endTimeInput.addEventListener('input', () => {
+    updateTimeFormat(endTimeInput, endTimeFormatSpan);
+  });
+
   // Load initial state
   chrome.storage.sync.get(['isEnabled', 'blockedWebsites', 'schedule'], (data) => {
-    isEnabled = data.isEnabled || false;
-    blockedWebsites = data.blockedWebsites || [];
-    schedule = data.schedule || {
+    isEnabled = data.isEnabled === true;
+    blockedWebsites = Array.isArray(data.blockedWebsites) ? data.blockedWebsites : [];
+
+    const defaultSchedule = {
       enabled: false,
       startTime: '09:00',
       endTime: '17:00',
       days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
     };
+
+    // Ensure schedule object and its properties are valid, otherwise use defaults
+    if (data.schedule && typeof data.schedule === 'object') {
+      schedule.enabled = data.schedule.enabled === true;
+      
+      schedule.startTime = (typeof data.schedule.startTime === 'string' && /^\d{2}:\d{2}$/.test(data.schedule.startTime))
+        ? data.schedule.startTime
+        : defaultSchedule.startTime;
+      
+      schedule.endTime = (typeof data.schedule.endTime === 'string' && /^\d{2}:\d{2}$/.test(data.schedule.endTime))
+        ? data.schedule.endTime
+        : defaultSchedule.endTime;
+      
+      schedule.days = (Array.isArray(data.schedule.days) && data.schedule.days.every(day => typeof day === 'string'))
+        ? data.schedule.days
+        : defaultSchedule.days;
+      if (schedule.days.length === 0 && defaultSchedule.days.length > 0) { // Ensure days are not empty if defaults are not
+          schedule.days = defaultSchedule.days;
+      }
+
+    } else {
+      schedule = { ...defaultSchedule };
+    }
 
     updateStatus();
     updateBlockedWebsitesList();
@@ -437,9 +466,13 @@ document.addEventListener('DOMContentLoaded', () => {
     scheduleToggle.classList.toggle('enabled', schedule.enabled);
     scheduleOptions.classList.toggle('active', schedule.enabled);
     
-    // Display times in 12-hour format
+    // Display times in 24-hour format internally, let input field handle display
     startTimeInput.value = schedule.startTime;
     endTimeInput.value = schedule.endTime;
+
+    // Update AM/PM display based on the current input values
+    updateTimeFormat(startTimeInput, startTimeFormatSpan);
+    updateTimeFormat(endTimeInput, endTimeFormatSpan);
     
     // Update day toggles
     dayToggles.forEach(toggle => {
@@ -493,13 +526,35 @@ document.addEventListener('DOMContentLoaded', () => {
   // Helper function to check if current time is within range
   function isTimeInRange(current, start, end) {
     const parseTime = (timeStr) => {
-      const [hours, minutes] = timeStr.split(':').map(Number);
+      if (!timeStr || typeof timeStr !== 'string' || !timeStr.includes(':')) {
+        // console.warn(`[parseTime] Invalid time string format: "${timeStr}"`);
+        return NaN;
+      }
+      const parts = timeStr.split(':');
+      if (parts.length !== 2) {
+        // console.warn(`[parseTime] Invalid time string parts: "${timeStr}"`);
+        return NaN;
+      }
+      const hours = parseInt(parts[0], 10);
+      const minutes = parseInt(parts[1], 10);
+
+      if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+        // console.warn(`[parseTime] Invalid hours/minutes in time string: "${timeStr}" (parsed as ${hours}:${minutes})`);
+        return NaN;
+      }
       return hours * 60 + minutes;
     };
     
     const currentMinutes = parseTime(current);
     const startMinutes = parseTime(start);
     const endMinutes = parseTime(end);
+    
+    // console.log(`[isTimeInRange] Comparing: Current=${current}(${currentMinutes}), Start=${start}(${startMinutes}), End=${end}(${endMinutes})`);
+
+    if (isNaN(currentMinutes) || isNaN(startMinutes) || isNaN(endMinutes)) {
+      // console.error(`[isTimeInRange] One or more parsed times are NaN. current: ${currentMinutes}, start: ${startMinutes}, end: ${endMinutes}. Aborting comparison.`);
+      return false; 
+    }
     
     if (endMinutes < startMinutes) {
       // Handle overnight schedules
@@ -597,22 +652,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const controls = document.createElement('div');
     controls.className = 'site-controls';
     
-    // Create schedule button
-    const scheduleButton = document.createElement('button');
-    scheduleButton.className = 'schedule-site-btn';
-    scheduleButton.textContent = 'Schedule';
-    scheduleButton.title = 'Schedule blocking for this site';
-    scheduleButton.onclick = () => showSiteScheduleModal(website);
-    
-    // Create remove button
+    // Create a simple remove button with proper × HTML entity
     const removeButton = document.createElement('button');
     removeButton.className = 'remove-website';
-    removeButton.innerHTML = '×';
-    removeButton.title = 'Remove website';
+    removeButton.innerHTML = '&times;'; // Proper multiplication/times symbol
+    removeButton.title = 'Remove';
     removeButton.onclick = () => removeWebsite(website);
     
-    // Add buttons to controls
-    controls.appendChild(scheduleButton);
+    // Add remove button to controls
     controls.appendChild(removeButton);
     
     // Add all elements to list item
@@ -682,8 +729,41 @@ document.addEventListener('DOMContentLoaded', () => {
     hours = parseInt(hours);
     
     if (modifier === 'PM' && hours < 12) hours = hours + 12;
-    if (modifier === 'AM' && hours === 12) hours = 0;
+    if (modifier === 'AM' && hours === 12) hours = 0; // Midnight case
     
-    return `${hours.toString().padStart(2, '0')}:${minutes}`;
+    if (isNaN(hours) || isNaN(parseInt(minutes))) return '00:00'; // Fallback for bad input
+
+    return `${hours.toString().padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+  }
+
+  // --- AM/PM label updater for time inputs ---
+  function updateTimeFormat(inputElement, formatSpanElement) {
+    if (!inputElement) {
+      return;
+    }
+
+    const timeValue = inputElement.value; // HH:MM format or empty string
+
+    if (!timeValue || !/^\d{2}:\d{2}$/.test(timeValue)) {
+      // Reset any styling if time is invalid
+      inputElement.classList.remove('am-time', 'pm-time');
+      return;
+    }
+
+    const [hourString] = timeValue.split(':');
+    const hour = parseInt(hourString, 10);
+
+    if (isNaN(hour) || hour < 0 || hour > 23) {
+      // Reset any styling if hour is invalid
+      inputElement.classList.remove('am-time', 'pm-time');
+      return;
+    }
+    
+    // Remove both classes first
+    inputElement.classList.remove('am-time', 'pm-time');
+    
+    // Add the appropriate class for color-coding directly to the input
+    const isAM = hour < 12;
+    inputElement.classList.add(isAM ? 'am-time' : 'pm-time');
   }
 }); 
